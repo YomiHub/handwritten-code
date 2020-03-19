@@ -7,7 +7,7 @@
 function createNew () {
   var obj = {};  //new Object();
   var constructor = [].shift.apply(arguments);  //var [constructor,...args] = [...arguments]
-  obj._proto_ = constructor.prototype; //链接原型
+  obj.__proto__ = constructor.prototype; //链接原型
   var res = constructor.apply(obj, arguments);  //修改this指向
   return typeof res == 'object' ? res : obj;  //返回新对象
 }

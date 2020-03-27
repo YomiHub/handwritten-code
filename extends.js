@@ -69,3 +69,19 @@ Child3.prototype.constructor = Child3;  //修改constructor属性指向的原型
 
 var child3 = new Child3('hyz', 6);
 child3.say();  //my name is hyz
+
+
+//寄生组合继承 
+function Child4 (name, age) {
+  People.call(this);
+  this.name = name;
+  this.age = age;
+}
+
+(function () {
+  var Super = function () { };
+  Super.prototype = People.prototype
+  Child4.prototype = new Super();  //用一个 F 空的构造函数去取代执行了 Parent 这个构造函数。
+})()
+var child4 = new Child4('Rainy', 20);
+child4.say()  //my name is Rainy

@@ -52,7 +52,8 @@ Child2.prototype = new People();
 var child2 = new Child2('hjx', 21);
 child2.say();  //my name is hjx
 
-//!组合继承
+//!组合继承  
+//?Object.create()实现
 function create (proto) {
   function F () { };
   F.prototype = proto;

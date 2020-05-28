@@ -59,6 +59,9 @@ let flatGenerator = function (tree) {
   return [...iteTree(tree)];
 }
 
+/*
+//测试
 let arrflat = [1, 2, [3, 4, [5, 6]], 7];
 console.log(flat(arrflat, 2));
 console.log(flatGenerator(arrflat));
+*/

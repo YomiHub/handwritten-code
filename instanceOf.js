@@ -1,4 +1,9 @@
 //?实现instanof方法 判断变量right的原型存在于left的原型链上
+/**
+ * 
+ * @param {left} left a instance
+ * @param {*} right a prototype
+ */
 function instanceOf (left, right) {
   var proto = left.__proto__;
   var prototype = right.prototype;

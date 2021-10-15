@@ -30,6 +30,43 @@ let res = map(arr, function (item, index, arr) {
 console.log(res); */
 
 //?实现flat
+//ES5语法糖reduce(接收一个函数作为累加器，数组中的每个值（从左到右）开始缩减，最终计算为一个值) 递归实现
+let flat1 = function(arr){
+  return arr.reduce(function(res,itt){
+    return res.concat(Array.isArray(itt)?flat1(itt):itt)
+  },[])
+}
+
+
+//遍历实现（使用ES6的解构赋值）
+const flat2 = function(arr){
+  var result = [];
+  var stack = [...arr];  //解决直接赋值时，改变源数组arr
+
+  console.log(stack);
+
+  while(stack.length!=0){
+    var val = stack.pop();
+
+    if(Array.isArray(val)){
+      stack.push(...val); //倒序存入
+    }else{
+      result.unshift(val); 
+    }
+  }
+  return result;
+}
+
+
+// 测试
+let arr1 = [
+  1,
+  [ 2, 3, 4 ],
+  [ 5, [ 6, [ 7, [ 8 ] ] ] ]
+]
+console.log(flat2(arr1)) 
+
+//预先知道层级（太不靠谱了伐）
 let flat = function (arr, level = 1) {
   let res = [];
   for (let i = 0; i < arr.length; i++) {

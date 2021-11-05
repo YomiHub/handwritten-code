@@ -27,7 +27,7 @@ console.log(sum(1, 2, 3, 4));  //10
 const es6Curry = (fn, arr = []) => (...args) => (
   arg => args.length === fn.length
     ? fn(...arg)
-    : curry(fn, arg)
+    : es6Curry(fn, arg)
 )([...arr, ...args]);
 
 var es6Sum = es6Curry(getSum);

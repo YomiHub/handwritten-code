@@ -40,6 +40,7 @@ const add = (a, b, c) => a + b + c;
 const a = es6Curry1(add, 1);
 console.log(a(2,3)) //6
 
+
 //?ES6一行代码实现函数柯里化
 const es6Curry2 =
   (fn, arr = []) =>

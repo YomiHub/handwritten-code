@@ -1,6 +1,6 @@
 let obj = {};
-let inputEle = document.getElementById("input");
-let spanEle = document.getElementById("span");
+let input = document.getElementById("input");
+let span = document.getElementById("span");
 
 //数据劫持，实现对象text属性的拦截
 Object.defineProperty(obj,'text',{

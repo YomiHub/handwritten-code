@@ -86,3 +86,29 @@ function Child4 (name, age) {
 })()
 var child4 = new Child4('Rainy', 20);
 child4.say()  //my name is Rainy
+
+
+//寄生组合继承
+function Person(name){
+  this.name = name;
+}
+
+Person.prototype.sayHello = function(){
+  console.log("my name is "+ this.name);
+}
+
+function Son(name,age){
+  Person.call(this,name);
+  this.age = age;
+}
+
+Son.prototype = Object.create(Person.prototype);
+Son.prototype.constructor = Son;
+
+Son.prototype.SayAge = function(){
+  console.log("my name is "+ this.name+" and I am "+this.age+" years old")
+}
+
+let people = new Son('hym','18');
+people.sayHello();
+people.SayAge();

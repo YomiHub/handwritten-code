@@ -16,6 +16,8 @@
 - LRU_cache.js [实现LRU (最近最少使用) 缓存机制](https://github.com/YomiHub/handwritten-code/blob/master/LRU_cache.js)
 
 ### 排序和查找
+- sort.js: [快排、插入排、选择排、冒泡排](https://github.com/YomiHub/handwritten-code/blob/master/sort.js)
+- search.js: [二分查找](https://github.com/YomiHub/handwritten-code/blob/master/search.js)
 
 ### 关于Vue
 - vue_data_tow_way_bind.js: [数据双向绑定](https://github.com/YomiHub/handwritten-code/blob/master/vue_data_tow_way_bind.js)

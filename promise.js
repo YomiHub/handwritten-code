@@ -17,7 +17,7 @@ new Promise(
 */
 
 //!初级版的Promise
-/* function myPromise (constructor) {
+function myPromise (constructor) {
   let self = this;
   self.status = 'pending';  //初始状态
   self.value = undefined;  //成功时的状态 resolved
@@ -68,7 +68,7 @@ p.then(function (data) {
 }, function (reason) {
   //失败
 })
- */
+
 
 
 //!比较完整的Promise

@@ -102,3 +102,35 @@ let arrflat = [1, 2, [3, 4, [5, 6]], 7];
 console.log(flat(arrflat, 2));
 console.log(flatGenerator(arrflat));
 */
+
+//来源：https://github.com/lgwebdream/FE-Interview/issues/8
+// 【头条】合并二维有序数组成一维有序数组
+function merge(arr1,arr2){
+  let result = [];
+  while(arr1.length>0&&arr2.length>0){
+    if(arr1[0]<=arr2[0]){
+      //取出第一个元素
+      result.push(arr1.shift());
+    }else{
+      result.push(arr2.shift());
+    }
+  }
+  return result.concat(arr1,arr2)
+}
+
+function mergeSort(arr){
+  let len = arr.length;
+  if(len===0){return []};
+  while(arr.length>1){
+    //每两项进行合并，并将结果放到数组后面
+    let itemPre = arr.shift();
+    let itemNext = arr.shift();
+    arr.push(merge(itemPre,itemNext));
+  }
+  return arr[0]
+}
+
+let arr1 = [[1,2,3],[4,5,6],[7,8,9],[1,2,3],[4,5,6]];
+let arr2 = [[1,4,6],[7,8,10],[2,6,9],[3,7,13],[1,5,12]];
+console.log(mergeSort(arr1));
+console.log(mergeSort(arr2));

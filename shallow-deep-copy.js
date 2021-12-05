@@ -48,6 +48,9 @@ function deepClone (obj) {
         objClone[prop] = obj[prop] && typeof obj[prop] === 'object' ? deepClone(obj[prop]) : obj[prop]
       }
     }
+  }else if (typeof obj == "function") {
+    //将所有可枚举属性的值从一个或多个源对象分配到目标对象。它将返回目标对象。
+    return Object.assign(obj);  //假如源值是一个对象的引用，它仅仅会复制其引用值
   }
 
   return objClone;

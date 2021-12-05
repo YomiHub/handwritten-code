@@ -9,7 +9,7 @@ let quickSort = function (arr) {
   let left = [];
   let right = [];
   for (let i = 0; i < arr.length; ++i) {
-    if (arr[i] < pivot) {
+    if (arr[i] <= pivot) {
       left.push(arr[i]); //比[mid]小的放在左边，大的放在右边
     } else {
       right.push(arr[i]);
@@ -17,6 +17,11 @@ let quickSort = function (arr) {
   }
   return quickSort(left).concat([pivot], quickSort(right));
 };
+
+//快排的非递归实现
+let quickSort = function(){
+  
+}
 
 //选择排（选择最小的元素进行交换）
 let selectSort = function (arr) {

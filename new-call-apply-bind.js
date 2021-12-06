@@ -12,6 +12,16 @@ function createNew () {
   return typeof res == 'object' ? res : obj;  //返回新对象
 }
 
+function createNew(fn, ...args) {
+  let obj = Object.create(fn);
+  let res = fn.call(obj, ...args);
+
+  if (res && (typeof res == "object" || typeof res == "function")) {
+    return res;
+  }
+  return obj;
+}
+
 function People (name, age) {
   this.name = name;
   this.age = age;
@@ -35,18 +45,31 @@ function getSymbol (obj) {
   }
 }
 
-Function.prototype.mycall = function (context) {
+Function.prototype.myCall = function (context) {
   if (typeof this !== 'function') {
     throw Error('this is not function');
   }
 
   context = context || window;
   let fn = getSymbol(context);
-  context.fn = this;
+  context[fn] = this;
   let args = [...arguments].slice(1);
-  let res = arguments.length > 1 ? context.fn(...args) : context.fn();
-  delete context.fn;
+  let res = arguments.length > 1 ? context[fn](...args) : context[fn]();
+  delete context[fn];
   return res;
+}
+
+//使用symbol类型（apply同理，只是传参是数组，接收参数时无需解构）
+Function.prototype.myCall = function(context, ...args){
+  if (!context || context == null) {
+    context = window
+  }
+
+  let fn = Symbol()
+  context[fn] = this
+  let res = arguments.length > 1 ? context[fn](...args) : context[fn]()
+  delete context[fn]
+  return res
 }
 
 
@@ -58,28 +81,28 @@ Function.prototype.myApply = function (context) {
 
   context = context || window;
   let fn = getSymbol(context);
-  context.fn = this;
-  let res = arguments[1].length ? context.fn(...arguments[1]) : context.fn();
+  context[fn] = this;
+  let res = arguments[1].length ? context[fn](...arguments[1]) : context[fn]();
   return res;
 }
 
 
 //? 实现bind方法，参数逐个列出，返回尚未执行的函数；类似于call，逐个传参，但是支持柯里化传参f(a)(b)
-Function.prototype.mybind = function (context) {
-  if (typeof this !== 'function') {
-    throw Error('this is not function');
+Function.prototype.myBind = function (context,...args) {
+  //或者ES5截取context以外的参数 args = arguments.slice(1); //截取
+  if(typeof this != 'function') {
+    throw Error("this is not function")
   }
+  context = context || window
+  let fn = Symbol();  //getSymbol(context);
+  context[fn] = this;
 
-  context = context || window;
-  let fn = getSymbol(context);
-  context.fn = this;
   let _this = this;
-  let args = arguments.slice(1); //截取context以外的参数
-  return function F () {
-    if (this instanceof F) {  //判断是否第一次调用F()
-      return new _this(...args, ...arguments);  //已经改变this指向，传参执行函数
-    } else {
-      return _this.myapply(context, args.concat(...arguments));  //改变this指向时传递的参数与函数执行时的参数合并
+  return function F(){
+    if(this instanceof F){ //判断是否第一次调用F()
+      return new _this(args,...arguments); //已经改变this指向，传参执行函数
+    }else{
+      return _this.apply(context,args.concat(...arguments));//改变this指向时传递的参数与函数执行时的参数合并
     }
   }
 }
@@ -90,11 +113,11 @@ var personOne = {
   age: 16
 }
 
-person.getMessage.mycall(personOne, 1, 2);  //hjx 16 [Arguments] { '0': 1, '1': 2 }
+person.getMessage.myCall(personOne, 1, 2);  //hjx 16 [Arguments] { '0': 1, '1': 2 }
 person.getMessage.myApply(personOne, [1, 2]);//hjx 16 [Arguments] { '0': 1, '1': 2 }
 
-let bindFn = person.getMessage.bind(personOne);
+let bindFn = person.getMessage.myBind(personOne);
 bindFn(1, 2);  //hjx 16 [Arguments] { '0': 1, '1': 2 }
 
-let bindFn2 = person.getMessage.bind(personOne, 1);
+let bindFn2 = person.getMessage.myBind(personOne, 1);
 bindFn2(2);  //hjx 16 [Arguments] { '0': 1, '1': 2 }

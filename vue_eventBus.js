@@ -45,7 +45,7 @@ class EventEmitter{
     }
   }
   //只保存一个消息
-  once(fn){
+  once(eventName,fn){
     this.events[eventName] = fn;
   }
   //发送消息

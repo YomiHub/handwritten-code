@@ -35,7 +35,7 @@ function People (name) {
   console.log('my name is ' + this.name);
 } */
 
-//构造函数继承（无法继承父级的prototype上定义的函数）
+//构造函数继承（方法在构造函数中定义，无法复用；无法继承父级的prototype上定义的函数）
 function Child1 (name, age) {
   People.call(this, name, age);
 }
@@ -43,7 +43,7 @@ function Child1 (name, age) {
 var child1 = new Child1('hym', 18);
 child1.say();  //my name is hym
 
-//原型继承（需要重写继承属性）
+//-------原型链继承（需要重写继承属性、不能给父类传参）
 function Child2 (name, age) {
   this.name = name;
   this.age = age;
@@ -52,63 +52,67 @@ Child2.prototype = new People();
 var child2 = new Child2('hjx', 21);
 child2.say();  //my name is hjx
 
-//!组合继承  
-//?Object.create()实现
+//-------组合继承 （无论在什么情况下，都会调用两次父类型的构造函数）
+function Child3(name, age) {
+  // 第二次调用了One()，实例对象继承了One的两个属性，会屏蔽掉原型Son.prototype中的两个同名属性
+  People.call(this, name);
+  this.age = age;
+}
+// 第一次调用了One()，继承了One的原型方法, Two.prototype会得到Parent的两个属性
+Child3.prototype = new People();
+Child3.prototype.constructor = Child3;
+Child3.prototype.getAge = function() {
+  return this.age;
+}
+
+//-------原型式继承
+//Object.create()实现
 function create (proto) {
   function F () { };
   F.prototype = proto;
   return new F();
 }
+var person = {
+  name: "Nicholas",
+  friends: ["Shelby", "Court", "Van"]
+};
 
-function Child3 (name, age) {
-  People.call(this, name);  //继承父级的属性
-  this.age = age;
+var Child4 = Object.create(person); // 浅拷贝：对于引用类型的值的属性，会共享
+Child4.name = "hym";  //多个实例的引用类型属性指向相同，存在篡改的可能
+Child4.friends.push("hym");
+console.log(person.friends)
+
+//-------寄生式继承  使用寄生式函数来对对象添加函数，无法做到函数的复用。 
+function Child5 (origin) {
+  var clone = Object.create(origin);
+  clone.sayAge = function(){ // 以某种方式来增强对象
+    console.log("age")
+  }
+  return clone;
 }
 
-Child3.prototype = create(Parent.prototype) //继承父级的方法 可以使用es6的方法：Object.create(Parent.prototype); 
-Child3.prototype.constructor = Child3;  //修改constructor属性指向的原型，弥补重写原型丢失的constructor
+var child5 = Child5(People);
+child5.sayAge();
 
-var child3 = new Child3('hyz', 6);
-child3.say();  //my name is hyz
-
-
-//寄生组合继承 
-function Child4 (name, age) {
-  People.call(this);
-  this.name = name;
+//-------寄生组合继承 
+function Child6 (name, age) {
+  People.call(this,name);
   this.age = age;
 }
 
 (function () {
-  var Super = function () { };
-  Super.prototype = People.prototype
-  Child4.prototype = new Super();  //用一个 F 空的构造函数去取代执行了 Parent 这个构造函数。
+  // 创建父类型原型的副本
+  const prototype = Object.create(People.prototype); 
+  // 为创建的副本添加constructor属性，从而弥补因重写原型而失去的默认的constructor属性
+  prototype.constructor = Child6;
+  // 将创建的副本赋值给子类型的原型
+  Child6.prototype = prototype;
 })()
-var child4 = new Child4('Rainy', 20);
-child4.say()  //my name is Rainy
 
-
-//寄生组合继承
-function Person(name){
-  this.name = name;
-}
-
-Person.prototype.sayHello = function(){
-  console.log("my name is "+ this.name);
-}
-
-function Son(name,age){
-  Person.call(this,name);
-  this.age = age;
-}
-
-Son.prototype = Object.create(Person.prototype);
-Son.prototype.constructor = Son;
-
-Son.prototype.SayAge = function(){
+Child6.prototype.SayAge = function(){
   console.log("my name is "+ this.name+" and I am "+this.age+" years old")
 }
 
-let people = new Son('hym','18');
-people.sayHello();
-people.SayAge();
+var child6 = new Child6('hym', 20);
+child6.say()  //my name is hym
+child6.SayAge();

@@ -131,3 +131,26 @@ schedule.add(500,'2');
 schedule.add(300,'3');
 schedule.add(400,'4');
 schedule.taskStart();
+
+// 实现retry：function retry(fn,times,delay)，fn为异步请求，经过retry包装后，首先执行fn，如果失败则每隔delay的时间尝试一次，直到最后失败。
+function retry(fn,times,delay){
+  let time = 0;
+  return new Promise((resolve,reject)=>{
+      const attemp = ()=>{
+          Promise.resolve(fn)
+          .then(resolve)
+          .catch(err=>{
+              time++;
+              console.log("尝试失败");
+              if(time==times){
+                  reject(err);
+              }else{
+                  setTimeOut(()=>{
+                      attemp();
+                  },delay)
+              }
+          })
+      }
+      attemp();
+  })
+}

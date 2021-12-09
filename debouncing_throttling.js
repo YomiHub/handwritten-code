@@ -30,3 +30,18 @@ function throttle (fn, wait) {
     }
   }
 }
+
+
+function getNum(a) {
+  console.log(a)
+}
+
+let fn = throttle(getNum, 1000);  //1S内只执行一次
+let timer = setInterval(function(){
+  fn(1);
+}, 500);
+
+setTimeout(function(){
+  clearInterval(timer)
+},4000)
+

@@ -131,3 +131,44 @@ schedule.add(500,'2');
 schedule.add(300,'3');
 schedule.add(400,'4');
 schedule.taskStart();
+
+//Promise 串行
+//方法一  通过循环进行串行
+Promise.mySerial1 = (promises)=>{
+  let result = [];
+  let index = 0;
+  
+  return new Promise((resolve,reject)=>{
+    const doTask = ()=>{
+      Promise.resolve(promises[index]).then(res=>{
+        index++;
+        result.push(res);
+        if(index === promises.length){
+          return resolve(result);
+        }
+        doTask(); //执行下一个任务
+      }).catch(err=>{
+        return reject(err) 
+      })
+    }
+
+    doTask();
+  })
+}
+
+//方法二是借助reduce函数
+Promise.mySerial2 = (promises)=>{
+  let result = [];
+  return promises.reduce((callBack,item,index)=>{
+    return callBack.then(res=>{
+      return Promise.resolve(item).then(res=>{ //Promise.resolve兼容非promise任务
+        result[index] = res;
+        return index === promises.length-1?result:item;
+      })
+    })
+  },Promise.resolve()); //(累加器，初始值)
+}
+
+Promise.mySeria2([p1, p2, p3]).then((res) => {
+  console.log(res); // [ 1, 2, 3 ]
+});

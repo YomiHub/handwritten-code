@@ -107,6 +107,16 @@ Function.prototype.myBind = function (context,...args) {
   }
 }
 
+Function.prototype.mybind = function (context) {
+  let self = this;
+  let args = [...arguments].slice(1);
+
+  return function () {
+    let nextArgs = [...arguments];
+    return self.myapply(context, args.concat(nextArgs));
+  }
+}
+
 
 var personOne = {
   name: 'hjx',

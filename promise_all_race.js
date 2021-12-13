@@ -60,7 +60,6 @@ Promise.myAll([p1, p2, p4])
 
 // 实现Promise.race
 // Promise.race(iterable) 方法返回一个 promise，一旦迭代器中的某个promise解决或拒绝，返回的 promise就会解决或拒绝
-
 Promise.myRace = (promises) => {
   return new Promise((rs, rj) => {
     promises.forEach((p) => {
@@ -86,6 +85,30 @@ Promise.myRace([promise1, promise2, 3]).then((value) => {
   // 3比其他两个更快
   console.log(value); // 3
 });
+
+// Promise.any() 接收一个Promise可迭代对象，只要其中的一个 promise 成功，就返回那个已经成功的 promise 。如果可迭代对象中没有一个 promise 成功（即所有的 promises 都失败/拒绝），就返回一个失败的 promis
+Promise.myAny = function(promises){
+  return new Promise((resolve,reject)=>{
+    promises = Array.isArray(promises) ? promises : []
+    let len = promises.length
+    let errs = []
+    // 如果传入的是一个空数组，那么就直接返回 AggregateError
+    if(len === 0) return reject(new AggregateError('All promises were rejected'))
+
+    promises.forEach((promise)=>{
+      promise.then(value=>{
+        resolve(value)
+      },err=>{
+        len--
+        errs.push(err)
+        if(len === 0){
+          reject(new AggregateError(errs))
+        }
+      })
+    })
+  })
+}
+
 
 // 来源链接：https://juejin.cn/post/7018337760687685669
 //实现并行限制的promise
@@ -172,6 +195,7 @@ Promise.mySerial2 = (promises)=>{
 Promise.mySeria2([p1, p2, p3]).then((res) => {
   console.log(res); // [ 1, 2, 3 ]
 });
+
 // 实现retry：function retry(fn,times,delay)，fn为异步请求，经过retry包装后，首先执行fn，如果失败则每隔delay的时间尝试一次，直到最后失败。
 function retry(fn,times,delay){
   let time = 0;

@@ -32,7 +32,7 @@ function es6Curry1(fn, ...args) {
     } else {
       return res;
     }
-  };
+  };  
   return res;
 }
 

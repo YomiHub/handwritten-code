@@ -18,10 +18,28 @@ let quickSort = function (arr) {
   return quickSort(left).concat([pivot], quickSort(right));
 };
 
-//快排的非递归实现
-let quickSort = function(){
-  
-}
+//快排的第二种实现
+let quickSort = function (arr,left,right) {
+  if (left < right) {
+    var x = arr[right],
+      i = left - 1,
+      temp;
+    // 将小于等于[right]不断交换到数组前面，即以[right]作为mid
+    for (var j = left; j <= right; j++) {
+      if (arr[j] <= x) {
+        i++;
+        temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+      }
+    }
+    quickSort(arr, left, i - 1);
+    quickSort(arr, i + 1, right);
+  }
+  return arr;
+};
+let temp = [1,44,6,7,22,7,98,4,5,7]
+console.log(quickSort(temp,0,temp.length-1))
 
 //选择排（选择最小的元素进行交换）
 let selectSort = function (arr) {
@@ -64,23 +82,23 @@ let insertSort = function (arr) {
 };
 
 //冒泡排（反向循环，减少遍历次数）
-let bubbleSort = function(arr){
+let bubbleSort = function (arr) {
   if (arr.length <= 1) {
     return arr;
   }
 
   let len = arr.length;
-  for (let i = len-1; i>=0; --i) {
-    for(let j = 0; j<i; j++){
-      if(arr[j]>arr[j+1]){
-        let temp = arr[j+1];  //将最大的数向后移动
-        arr[j+1] = arr[j];
+  for (let i = len - 1; i >= 0; --i) {
+    for (let j = 0; j < i; j++) {
+      if (arr[j] > arr[j + 1]) {
+        let temp = arr[j + 1]; //将最大的数向后移动
+        arr[j + 1] = arr[j];
         arr[j] = temp;
       }
     }
   }
   return arr;
-}
+};
 
 var a = [13, 13, 78, 3, 2, 6, 4, 7];
 console.log(bubbleSort(a));

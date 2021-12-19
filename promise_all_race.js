@@ -92,8 +92,8 @@ Promise.myAny = function(promises){
     promises = Array.isArray(promises) ? promises : []
     let len = promises.length
     let errs = []
-    // 如果传入的是一个空数组，那么就直接返回 AggregateError
-    if(len === 0) return reject(new AggregateError('All promises were rejected'))
+    // 如果传入的是一个空数组，那么就直接返回
+    if(len === 0) return reject(new Error('All promises were rejected'))
 
     promises.forEach((promise)=>{
       promise.then(value=>{
@@ -102,7 +102,7 @@ Promise.myAny = function(promises){
         len--
         errs.push(err)
         if(len === 0){
-          reject(new AggregateError(errs))
+          reject(new Error(errs)) //AggregateError 可传入数组类型Error
         }
       })
     })

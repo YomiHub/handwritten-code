@@ -25,7 +25,7 @@ function generatorToAsync(genFn) {
           //value可能是常量；Promise有可能有失败和成功状态
           return Promise.resolve(value).then(
             (val) => {
-              doTask("next", val);
+              doTask("next", val);  //yield 后面也许会引用上一次异步执行的结果，需要传参
             },
             (err) => {
               doTask("throw", err);
@@ -46,10 +46,11 @@ function fn(a, b) {
 function* testGen() {
   let num1 = yield fn(1, 2); //等同于 await fn(1)
   console.log(num1);  //3
-  let num2 = yield fn(num1, 3);
+  let num2 = yield fn(num1, 3); //引用了上一次next的执行value，所以需要在执行next时传参
   console.log(num2); //  6
   return num2;
 }
+//console.log(testGen()['next']())
 
 const toAsync = generatorToAsync(testGen);
 const asyncRes = toAsync();

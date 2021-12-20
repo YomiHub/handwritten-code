@@ -34,6 +34,18 @@ var person = createNew(People, 'hym', 21);
 person.getMessage();  //hym 21 [Arguments] {}
 
 //?实现 call 方法，将需要改变this指向的方法挂载到目标 this 并返回；参数逐个列出，返回函数执行结果
+//使用symbol类型（apply同理，只是传参是数组，接收参数时无需解构）
+Function.prototype.myCall = function(context, ...args){
+  if (!context || context == null) {
+    context = window
+  }
+
+  let fn = Symbol()
+  context[fn] = this
+  let res = arguments.length > 1 ? context[fn](...args) : context[fn]()
+  delete context[fn]
+  return res
+}
 
 //获取唯一的方法名称
 function getSymbol (obj) {
@@ -59,19 +71,6 @@ Function.prototype.myCall = function (context) {
   return res;
 }
 
-//使用symbol类型（apply同理，只是传参是数组，接收参数时无需解构）
-Function.prototype.myCall = function(context, ...args){
-  if (!context || context == null) {
-    context = window
-  }
-
-  let fn = Symbol()
-  context[fn] = this
-  let res = arguments.length > 1 ? context[fn](...args) : context[fn]()
-  delete context[fn]
-  return res
-}
-
 
 //?实现 apply 方法 ，参数接受一个数组，返回函数执行结果
 Function.prototype.myApply = function (context) {
@@ -88,23 +87,41 @@ Function.prototype.myApply = function (context) {
 
 
 //? 实现bind方法，参数逐个列出，返回尚未执行的函数；类似于call，逐个传参，但是支持柯里化传参f(a)(b)
+Function.prototype.myBind = function (context, ...args) {
+  if (typeof this != "function") {
+    throw Error("this is not a function");
+  }
+
+  let fn = this;
+  let F = function(){
+    if(this instanceof F){
+      new fn(...(args.concat(...arguments)));  // fn.apply(this, args.concat(...arguments));
+    }else{
+      fn.apply(context,args.concat(...arguments));
+    }
+  }
+  F.prototype = Object.create(fn.prototype);  // 绑定原型链
+  return F;
+};
+
 Function.prototype.myBind = function (context,...args) {
   //或者ES5截取context以外的参数 args = arguments.slice(1); //截取
   if(typeof this != 'function') {
     throw Error("this is not function")
   }
-  context = context || window
-  let fn = Symbol();  //getSymbol(context);
-  context[fn] = this;
 
-  let _this = this;
-  return function F(){
-    if(this instanceof F){ //判断是否第一次调用F()
-      return new _this(args,...arguments); //已经改变this指向，传参执行函数
+  context = context || window
+  let fn = this;
+  let F = function(){
+    if(this instanceof F){ //是通过 new 调用的
+      return new fn(...(args.concat(...arguments))); // fn.apply(this, args.concat(...arguments));
     }else{
-      return _this.apply(context,args.concat(...arguments));//改变this指向时传递的参数与函数执行时的参数合并
+      return fn.apply(context,args.concat(...arguments));//改变this指向时传递的参数与函数执行时的参数合并
     }
   }
+
+  F.prototype = Object.create(fn.prototype);   // 绑定原型链
+  return F;  //不是立即执行，而是返回函数
 }
 
 Function.prototype.mybind = function (context) {

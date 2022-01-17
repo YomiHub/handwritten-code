@@ -1,5 +1,5 @@
 //!简单的Ajax请求，XMLHttpRequest对象的基本使用
-function simpleAjax (method, url, data, fn) {
+function simpleAjax(method, url, data, fn) {
   method = method.toUpperCase();
   let xhr = new XMLHttpRequest(); //实例化
   xhr.open(method, url, true); //初始化：请求方法、请求地址、是否异步请求
@@ -9,11 +9,11 @@ function simpleAjax (method, url, data, fn) {
     if (xhr.readyState == 4 && (xhr.status == 200 || xhr.status == 304)) {
       fn.call(this, xhr.responseText); //回调fn
     }
-  }
+  };
 
-  if (method == 'POST' || method == 'PUT') {
+  if (method == "POST" || method == "PUT") {
     xhr.send(data);
-  } else if (method == 'GET' || method == 'DELETE') {
+  } else if (method == "GET" || method == "DELETE") {
     xhr.send();
   }
 }
@@ -26,34 +26,35 @@ btn.onclick = function () {
   })
 } */
 
-
 //!Promise实现Ajax
-function ajax ({
-  url = '',
-  method = 'GET',
+function ajax({
+  url = "",
+  method = "GET",
   data = {},
   header = {
-    'Content-Type': 'application/json'
+    "Content-Type": "application/json",
   },
-  dataType = 'json',
-  responseType = 'text',
-  timeout = 60000
+  dataType = "json",
+  responseType = "text",
+  timeout = 60000,
 }) {
   return new Promise(function (resolve, reject) {
     method = method.toUpperCase();
     const xhr = new XMLHttpRequest();
-    let queryString = '';
+    let queryString = "";
 
     //处理请求参数
-    Object.keys(data).forEach(key => {
-      queryString += queryString == '' ? '' : '&';
-      queryString += encodeURIComponent(key) + '=' + encodeURIComponent(data[
-        key]); //对URL进行编码,把字符串作为 URI 组件进行编码
-    })
+    Object.keys(data).forEach((key) => {
+      queryString += queryString == "" ? "" : "&";
+      queryString +=
+        encodeURIComponent(key) + "=" + encodeURIComponent(data[key]); //对URL进行编码,把字符串作为 URI 组件进行编码
+    });
 
     //拼接url
-    if (method == 'GET' && queryString) {
-      url = url.includes('?') ? url + '&' + queryString : url + '?' + queryString;
+    if (method == "GET" && queryString) {
+      url = url.includes("?")
+        ? url + "&" + queryString
+        : url + "?" + queryString;
     }
 
     xhr.open(method, url); //初始化
@@ -64,41 +65,44 @@ function ajax ({
         try {
           if ((xhr.status >= 200 && xhr.status < 300) || xhr.status == 304) {
             const response = {
-              data: dataType === 'json' ? JSON.parse(xhr.responseText) : xhr.responseText,
+              data:
+                dataType === "json"
+                  ? JSON.parse(xhr.responseText)
+                  : xhr.responseText,
               status: xhr.status,
-              statusText: xhr.statusText
-            }
+              statusText: xhr.statusText,
+            };
 
             resolve(response);
           } else {
-            reject('response Error');
+            reject("response Error");
           }
         } catch (e) {
           reject(e);
         }
       }
-    }
+    };
 
     //设置超时时长
     xhr.timeout = timeout;
     xhr.ontimeout = function () {
-      reject('timeout');
-    }
+      reject("timeout");
+    };
 
     //发送请求
-    if (method == 'POST' || method == 'PUT') {
-      let contentType = header['Content-Type'];
-      xhr.setRequestHeader('Content-Type', contentType);
-      console.log(contentType)
-      if (contentType == 'application/json') {
+    if (method == "POST" || method == "PUT") {
+      let contentType = header["Content-Type"];
+      xhr.setRequestHeader("Content-Type", contentType);
+      console.log(contentType);
+      if (contentType == "application/json") {
         xhr.send(JSON.stringify(data));
-      } else if (contentType == 'application/x-www-form-urlencoded') {
+      } else if (contentType == "application/x-www-form-urlencoded") {
         xhr.send(queryString);
       }
-    } else if (method == 'GET' || method == 'DELETE') {
+    } else if (method == "GET" || method == "DELETE") {
       xhr.send();
     }
-  })
+  });
 }
 
 //?ajax测试
@@ -127,3 +131,38 @@ ajax({
 }, function (err) {
   console.log(err);
 }) */
+
+// JSONP
+function jsonp(url, params, callback) {
+  // 判断是否含有参数
+  let queryString = url.indexOf("?") === -1 ? "?" : "&";
+
+  // 添加参数
+  for (var k in params) {
+    if (params.hasOwnProperty(k)) {
+      queryString += k + "=" + params[k] + "&";
+    }
+  }
+
+  // 处理回调函数名
+  let random = Math.random().toString().replace(".", ""),
+    callbackName = "myJsonp" + random;
+
+  // 添加回调函数
+  queryString += "callback=" + callbackName;
+
+  // 构建请求
+  let scriptNode = document.createElement("script");
+  scriptNode.src = url + queryString;
+
+  window[callbackName] = function () {
+    // 调用回调函数
+    callback(...arguments);
+
+    // 删除这个引入的脚本
+    document.getElementsByTagName("head")[0].removeChild(scriptNode);
+  };
+
+  // 发起请求
+  document.getElementsByTagName("head")[0].appendChild(scriptNode);
+}

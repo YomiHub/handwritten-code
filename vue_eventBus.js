@@ -161,5 +161,49 @@ el.once("evt1", callback3);
 el.emit("evt1", "girl");
 
 el.off("evt1", callback2);
-
 el.emit("evt1", "boy");
+
+
+// 发布订阅模式
+
+// 被观察者
+class Subject {
+  constructor() {
+    this.observerList = []
+  }
+
+  addObserver(observer) {
+    this.observerList.push(observer)
+  }
+
+  removeObserver(observer) {
+    let index = this.observerList.findIndex((obj) => obj.name === observer.name)
+    this.observerList.splice(index, 1)
+  }
+
+  notifyObservers(mes) {
+    this.observerList.forEach((observer) => observer.notifyed(mes))
+  }
+}
+
+//观察者
+class Observer {
+  constructor(name, subJect) {
+    this.name = name
+    if (subJect) {
+      subJect.addObserver(this)
+    }
+  }
+
+  notifyed(mes) {
+    console.log(this.name, mes)
+  }
+}
+
+const subject = new Subject()
+const observerA = new Observer("observerA", subject)
+const observerB = new Observer("observerB")
+subject.addObserver(observerB)
+subject.notifyObservers("Hello from subject")
+subject.removeObserver(observerA)
+subject.notifyObservers("Hello again")
